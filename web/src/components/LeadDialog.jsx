@@ -40,7 +40,7 @@ export default function LeadDialog() {
   const [state, setState] = useState('idle');
   const [leadId, setLeadId] = useState(null);
 
-  const telegramContact = config?.telegram || SITE.secondaryContact.url;
+  const telegramContact = config?.telegram || 'https://t.me/nesssvt';
   const handle = telegramHandle(telegramContact);
 
   useEffect(() => {

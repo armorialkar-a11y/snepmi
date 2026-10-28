@@ -1,4 +1,5 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { heroGeometry, heroFrame, dampedSpring } from '../lib/animation.js';
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   ABOUT,
   APPROACH,
@@ -126,33 +127,75 @@ function step(authors, setActive, direction) {
 
 function HeroScroll() {
   const section = useRef(null);
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     const node = section.current;
     if (!node) return;
-    let frame = 0;
-    const update = () => {
+    const stage = node.querySelector('.hero-scroll-stage');
+    const art = node.querySelector('.hero-scroll-art');
+    const logo = node.querySelector('.hero-scroll-logo');
+    const caption = node.querySelector('.hero-scroll-caption');
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let geometry;
+    let scrollStart = 0, travel = 1;
+    let frame = 0, lastTime = null;
+    let scale = { value: 1.1, velocity: 0 };
+    let lift = { value: 0, velocity: 0 };
+    let progress = { value: 0, velocity: 0 };
+    const draw = () => {
+      art.style.transform = `translate3d(0, ${lift.value}px, 0) scale(${scale.value})`;
+      caption.style.opacity = String(0.35 + progress.value * 0.65);
+    };
+    const tick = (now) => {
       frame = 0;
-      const travel = node.offsetHeight - window.innerHeight;
-      const scrolled = Math.min(Math.max(-node.getBoundingClientRect().top, 0), Math.max(travel, 1));
-      setProgress(travel > 0 ? scrolled / travel : 0);
+      const target = media.matches ? 0 : Math.max(0, Math.min(1, (window.scrollY - scrollStart) / travel));
+      const goal = heroFrame(target, geometry);
+      // Keep velocity through wheel/touch changes and reversals. A capped timestep
+      // prevents catch-up jumps after a stalled frame or a backgrounded WebView.
+      const dt = lastTime === null ? 0 : Math.min(0.032, Math.max(0, (now - lastTime) / 1000));
+      lastTime = now;
+      scale = dampedSpring(scale, goal.scale, dt);
+      lift = dampedSpring(lift, goal.y, dt);
+      progress = dampedSpring(progress, target, dt);
+      const settled = Math.abs(scale.value - goal.scale) < 0.00001 && Math.abs(scale.velocity) < 0.0001
+        && Math.abs(lift.value - goal.y) < 0.01 && Math.abs(lift.velocity) < 0.1
+        && Math.abs(progress.value - target) < 0.0001 && Math.abs(progress.velocity) < 0.001;
+      if (settled || media.matches) {
+        scale = { value: goal.scale, velocity: 0 };
+        lift = { value: goal.y, velocity: 0 };
+        progress = { value: target, velocity: 0 };
+      }
+      draw();
+      if (!settled && !media.matches) frame = requestAnimationFrame(tick);
+      else lastTime = null;
     };
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(update);
+    const refresh = () => { if (!frame) frame = requestAnimationFrame(tick); };
+    const measure = () => {
+      geometry = heroGeometry({
+        stageWidth: stage.clientWidth, stageHeight: stage.clientHeight,
+        artWidth: art.offsetWidth, artHeight: art.offsetHeight, artTop: art.offsetTop,
+        logoHeight: logo.offsetHeight, mobile: window.matchMedia('(max-width: 760px)').matches,
+      });
+      const stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
+      scrollStart = node.getBoundingClientRect().top + window.scrollY - stickyTop;
+      travel = Math.max(1, node.offsetHeight - stage.offsetHeight);
+      // Updating responsive geometry changes the destination, never the current
+      // transform. No synchronous redraw/snap from ResizeObserver.
+      refresh();
     };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    measure();
+    const observer = new ResizeObserver(measure);
+    [node, stage, logo, art].forEach((element) => observer.observe(element));
+    window.addEventListener('scroll', refresh, { passive: true });
+    window.addEventListener('resize', measure);
+    media.addEventListener('change', measure);
     return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      observer.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', refresh);
+      window.removeEventListener('resize', measure);
+      media.removeEventListener('change', measure);
     };
   }, []);
-
-  const scale = 1 + progress * 0.22;
-  const offset = progress * 90;
 
   return (
     <section className="hero-scroll" ref={section} aria-label="SNEPMI AGENCY — фирменные персонажи">
@@ -164,10 +207,10 @@ function HeroScroll() {
         <div className="hero-scroll-logo">
           snepmi<span>®</span>
         </div>
-        <div className="hero-scroll-art" style={{ transform: `translate3d(0, ${offset}px, 0) scale(${scale})` }}>
+        <div className="hero-scroll-art" style={{ transform: 'translate3d(0, 0px, 0) scale(1.1)' }}>
           <img src="/images/site/hero-dolls.webp" alt={HERO_SCROLL.artAlt} />
         </div>
-        <div className="hero-scroll-caption" style={{ opacity: 0.35 + progress * 0.65 }}>
+        <div className="hero-scroll-caption" style={{ opacity: 0.35 }}>
           <Plus />
           <span>
             {joinLines(HERO_SCROLL.caption)}

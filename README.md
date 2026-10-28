@@ -1,3 +1,6 @@
+> Итоговая версия со всеми правками. Для обновления уже работающего приложения
+> сначала прочитайте START-HERE-RU.txt. Не создавайте новую базу данных.
+
 # SNEPMI AGENCY — Telegram Mini App
 
 Порт сайта SNEPMI AGENCY в Telegram Mini App: лендинг, каталог блогеров с фильтрами и подборкой,
@@ -15,7 +18,6 @@
 | `server/bot.js` | grammy-бот: `/start`, `/id`, `/help`, `/settings`, `/admin`, уведомления о заявках |
 | `server/db/sql/*.sql` | Миграции схемы; `server/db/seed.js` — импорт `data/bloggers.seed.json` |
 | `web/src` | React: `HomePage` (лендинг), `CatalogPage` (каталог), `AdminPage` (админка), `LeadDialog` |
-| `tools/extract-from-preview.mjs` | Одноразовый экстрактор исходного preview-файла (не нужен для сборки) |
 
 ## Локальный запуск
 
@@ -42,7 +44,7 @@ npm start                     # http://localhost:8080
    `web/public/telegram-verification.txt` (файл-заготовка уже в репозитории, отдаётся по адресу
    `https://ваш-домен/telegram-verification.txt`) и пересоберите приложение.
 4. `MINI_APP_ORIGIN` в окружении = тот же адрес без завершающего слеша: кнопки бота строят
-   ссылки вида `?startapp=catalog` / `?startapp=admin`, и приложение открывает нужный экран.
+   ссылки вида `?startapp=home` / `?startapp=admin`, и приложение открывает нужный экран.
 5. Узнайте свой id: напишите боту `/id`, добавьте его в `ADMIN_USER_IDS` (через запятую) —
    позже список правится во вкладке «Настройки» админки.
 6. `NOTIFY_CHAT_ID` — чат или user, которому бот присылает новые заявки.

@@ -35,9 +35,9 @@ function appUrl(param) {
 }
 
 function startKeyboard(settings) {
-  const catalog = appUrl('catalog');
+  const home = appUrl('home');
   const rows = [];
-  if (catalog) rows.push([webAppButton('📁 Открыть каталог блогеров', catalog)]);
+  if (home) rows.push([webAppButton('Открыть SNEPMI AGENCY', home)]);
   if (settings.telegram) rows.push([{ text: 'Написать менеджеру ↗', url: settings.telegram }]);
   // An empty `inline_keyboard: [[]]` makes sendMessage answer 400 — which is what
   // a fresh deploy without MINI_APP_ORIGIN would otherwise produce on every reply.
@@ -63,7 +63,7 @@ export function createBot() {
       [
         'SNEPMI AGENCY — подбор блогеров под вашу рекламную задачу.',
         '',
-        'Откройте каталог: ищите авторов по площадке, тематике и аудитории, отмечайте нужных и оставляйте заявку.',
+        'Откройте SNEPMI AGENCY: познакомьтесь с агентством, перейдите в каталог и отметьте понравившихся авторов.',
         '',
         `Ваш id: ${username} (нужен, чтобы получить доступ к админ-панели).`,
       ].join('\n'),
@@ -91,7 +91,7 @@ export function createBot() {
     await ctx.reply(
       [
         'Что умеет бот:',
-        '/start — открыть Mini App с каталогом блогеров',
+        '/start — открыть главную страницу SNEPMI AGENCY',
         '/id — показать ваш Telegram id (для доступа в админку)',
         '/settings — короткая сводка текущего режима',
         '/admin — админ-панель (только для ответственных)',
@@ -131,7 +131,7 @@ export function createBot() {
   bot.on('message', async (ctx) => {
     if (ctx.message?.text?.startsWith('/')) return;
     const settings = await safeSettings();
-    await ctx.reply('Открыть каталог можно кнопкой ниже.', { reply_markup: startKeyboard(settings) });
+    await ctx.reply('Открыть SNEPMI AGENCY можно кнопкой ниже.', { reply_markup: startKeyboard(settings) });
   });
 
   bot.catch((error) => console.error('bot error:', error.message));
@@ -152,14 +152,14 @@ export async function applyBotSetup() {
   const target = miniAppUrl();
   try {
     await instance.api.setMyCommands([
-      { command: 'start', description: 'Открыть каталог блогеров' },
+      { command: 'start', description: 'Открыть SNEPMI AGENCY' },
       { command: 'id', description: 'Мой Telegram id' },
       { command: 'help', description: 'Как пользоваться' },
       { command: 'admin', description: 'Админ-панель (для ответственных)' },
     ]);
     if (target) {
       await instance.api.setChatMenuButton({
-        menu_button: { type: 'web_app', text: 'Каталог', web_app: { url: target } },
+        menu_button: { type: 'web_app', text: 'SNEPMI', web_app: { url: target } },
       });
     }
     return true;

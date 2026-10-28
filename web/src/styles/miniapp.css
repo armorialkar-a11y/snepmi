@@ -19,9 +19,7 @@ body {
   }
 }
 
-.envelope-flap {
-  transition: transform 700ms cubic-bezier(0.22, 0.8, 0.2, 1);
-}
+/* The envelope uses a single JS timeline; no independent CSS transitions. */
 .envelope-form-link {
   display: block;
   margin: 16px auto 0;
@@ -57,4 +55,82 @@ label.btn {
 }
 .admin-pagination .btn:disabled {
   opacity: 0.45;
+}
+
+/* Keep the sticky scene tied to the stable Mini App viewport, not drag frames. */
+.hero-scroll {
+  --scene-height: min(760px, calc(var(--app-viewport-height, 100svh) - var(--scene-header)));
+  --scene-travel: clamp(320px, calc(var(--app-viewport-height, 100svh) * .65), 720px);
+  --scene-logo: min(26vw, calc(var(--app-viewport-height, 100svh) * .30), 310px);
+  --scene-art-height: min(calc(var(--app-viewport-height, 100svh) * .42), var(--scene-art-max), calc((var(--scene-height) - var(--scene-logo-top) - var(--scene-logo) - 56px) / 1.1));
+}
+@media (max-width: 760px) {
+  .header { min-height: 70px; }
+  .hero-scroll {
+    --scene-height: min(620px, calc(var(--app-viewport-height, 100svh) - var(--scene-header)));
+    --scene-travel: clamp(280px, calc(var(--app-viewport-height, 100svh) * .60), 560px);
+    --scene-logo: min(29.5vw, calc(var(--app-viewport-height, 100svh) * .23));
+  }
+}
+
+/* A concise, visible guide; the existing catalogue grid stays unchanged. */
+.catalog-pick-hint {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0 24px;
+  padding: 16px 20px;
+  border: 1px solid #ddbac6;
+  border-left: 3px solid #ae7085;
+  border-radius: 12px;
+  background: #faf0f3;
+  color: #513e46;
+}
+.catalog-pick-hint > svg {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  color: #94566d;
+  fill: #efd1db;
+}
+.catalog-pick-hint p { margin: 0; font-size: 14px; line-height: 1.55; }
+.catalog-pick-hint strong { font-weight: 600; }
+.catalog-route.has-selection { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+.catalog-selection-bar {
+  position: fixed;
+  z-index: 35;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 5vw calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #ddbac6;
+  background: #fffafc;
+  box-shadow: 0 -4px 18px #513e4610;
+}
+.catalog-selection-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1296px;
+  margin: 0 auto;
+}
+.selection-bar-count { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #513e46; }
+.selection-bar-count > svg { width: 20px; height: 20px; color: #94566d; fill: #efd1db; flex-shrink: 0; }
+.catalog-selection-bar .btn { min-height: 46px; padding: 12px 18px; font-size: 14px; }
+.catalog-selection-bar .btn:focus-visible { outline: 2px solid #94566d; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .catalog-pick-hint { margin: 16px 0 20px; padding: 14px; gap: 12px; }
+  .catalog-selection-bar { padding-inline: 12px; }
+  .catalog-selection-bar-inner { gap: 10px; }
+  .catalog-selection-bar .btn { padding-inline: 12px; gap: 8px; }
+}
+@media (max-width: 360px) {
+  .selection-bar-count { gap: 5px; }
+  .selection-bar-count > svg { display: none; }
+  .catalog-selection-bar .btn { font-size: 13px; padding-inline: 10px; }
+}
+.catalog-selection-bar .btn { transition: transform .15s; }
+@media (prefers-reduced-motion: reduce) {
+  .catalog-selection-bar .btn { transition: none; }
 }

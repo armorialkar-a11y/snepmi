@@ -124,18 +124,8 @@ export function BloggerCard({ blogger, config, picked, onToggle }) {
               ))}
             </dl>
           ) : null}
-          {blogger.ad_terms?.length || blogger.ad_restrictions?.length ? (
+          {blogger.ad_restrictions?.length ? (
             <div className="advertising-details">
-              {blogger.ad_terms?.length ? (
-                <>
-                  <h4>{CATALOG_PAGE.conditions}</h4>
-                  <ul>
-                    {blogger.ad_terms.map((term) => (
-                      <li key={term}>{term}</li>
-                    ))}
-                  </ul>
-                </>
-              ) : null}
               {blogger.ad_restrictions?.length ? (
                 <>
                   <h4>{CATALOG_PAGE.restrictions}</h4>

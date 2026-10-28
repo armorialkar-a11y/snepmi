@@ -5,7 +5,8 @@ import { useStore } from '../lib/store.jsx';
 import { haptic, openLink } from '../lib/telegram.js';
 import { SectionIndex, SiteFooter, SiteHeader, SkipLink } from '../components/Layout.jsx';
 import { BloggerCard, CategoryHeading, EmptyCatalog } from '../components/BloggerCard.jsx';
-import { Plus } from '../components/icons.jsx';
+import { Heart, Plus } from '../components/icons.jsx';
+import { selectionInquiry } from '../lib/selection-inquiry.js';
 
 export default function CatalogPage() {
   const { bloggers, config, status, picked, togglePicked, clearPicked, openLead, reload } = useStore();
@@ -38,9 +39,15 @@ export default function CatalogPage() {
 
   const selected = picked.map((id) => bloggers.find((blogger) => blogger.id === id)).filter(Boolean);
   const filtered = Boolean(query.trim() || platform || topic);
+  const inquiry = selectionInquiry(selected);
+  const discussSelected = (event) => {
+    event.preventDefault();
+    haptic('light');
+    openLink(inquiry);
+  };
 
   return (
-    <>
+    <div className={`catalog-route${selected.length ? ' has-selection' : ''}`}>
       <SkipLink to="#catalog-main" label="К каталогу" />
       <SiteHeader variant="catalog" />
       <main id="catalog-main" className="full-catalog section-pad">
@@ -97,6 +104,13 @@ export default function CatalogPage() {
             </select>
           </label>
         </div>
+
+        {status === 'ready' && bloggers.length ? (
+          <aside className="catalog-pick-hint" aria-label="Как выбрать блогеров">
+            <Heart />
+            <p><strong>Отметьте блогеров сердечком</strong> — внизу появится кнопка для обсуждения в Telegram.</p>
+          </aside>
+        ) : null}
 
         {status === 'loading' ? (
           <div className="catalog-empty">
@@ -198,9 +212,11 @@ export default function CatalogPage() {
             </ul>
             <p>Мы соберём подборку под задачу и обсудим условия размещения по выбранным авторам.</p>
             <div className="selection-actions">
-              <button className="btn dark" onClick={() => openLead(selected.map((blogger) => blogger.id))}>
-                {CATALOG_PAGE.apply}
-                <span aria-hidden="true">↗</span>
+              <a className="btn dark" href={inquiry} onClick={discussSelected}>
+                Обсудить в Telegram <span aria-hidden="true">↗</span>
+              </a>
+              <button className="text-link" onClick={() => openLead(selected.map((blogger) => blogger.id))}>
+                Заполнить заявку
               </button>
               <button className="text-link" onClick={clearPicked}>
                 {CATALOG_PAGE.clear}
@@ -230,6 +246,18 @@ export default function CatalogPage() {
         </div>
       </main>
       <SiteFooter variant="catalog" />
-    </>
+      {selected.length ? (
+        <section className="catalog-selection-bar" aria-label="Обсудить выбранных блогеров">
+          <div className="catalog-selection-bar-inner">
+            <span className="selection-bar-count" role="status" aria-live="polite">
+              <Heart /> <span>Выбрано: <strong>{selected.length}</strong></span>
+            </span>
+            <a className="btn dark" href={inquiry} onClick={discussSelected}>
+              Обсудить в Telegram <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+      ) : null}
+    </div>
   );
 }

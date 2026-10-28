@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api.js';
 import { startParam } from './telegram.js';
+import { publicBlogger } from '../../../shared/public-blogger.js';
 
 const StoreContext = createContext(null);
 const PICKED_KEY = 'snepmi.picked';
@@ -29,7 +30,7 @@ export function StoreProvider({ children }) {
     try {
       const [configResponse, bloggersResponse] = await Promise.all([api.get('/config'), api.get('/bloggers')]);
       setConfig(configResponse);
-      setBloggers(bloggersResponse.bloggers || []);
+      setBloggers((bloggersResponse.bloggers || []).map(publicBlogger));
       setStatus('ready');
     } catch (cause) {
       setError(cause.message);

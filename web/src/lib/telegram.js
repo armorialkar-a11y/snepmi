@@ -36,6 +36,15 @@ export function startParam() {
 
 export function ready() {
   const tg = sdk();
+  const syncViewport = (event) => {
+    // Ignore intermediate expansion/drag frames reported by Telegram.
+    if (event?.isStateStable === false) return;
+    const height = tg?.viewportStableHeight || window.innerHeight;
+    document.documentElement.style.setProperty('--app-viewport-height', `${height}px`);
+  };
+  syncViewport();
+  if (tg?.onEvent) tg.onEvent('viewportChanged', syncViewport);
+  else window.addEventListener('resize', syncViewport, { passive: true });
   if (!tg) return;
   try {
     tg.ready();
@@ -135,7 +144,7 @@ export function onBackClick(handler) {
   tg.BackButton.show();
   tg.BackButton.onClick(handler);
   return () => {
-    tg.BackButton.onClickRemove?.(handler);
+    tg.BackButton.offClick?.(handler);
     tg.BackButton.hide?.();
   };
 }
