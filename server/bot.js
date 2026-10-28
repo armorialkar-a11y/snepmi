@@ -2,9 +2,10 @@ import crypto from 'node:crypto';
 import { Bot } from 'grammy';
 import { config } from './config.js';
 import { getSettings } from './lib/settings.js';
+import { createPollingSupervisor } from './lib/pollingSupervisor.js';
 
 let bot = null;
-let polling = false;
+let pollingSupervisor = null;
 
 /** Telegram posts the secret as `X-Telegram-Bot-Api-Secret-Token`. */
 function webhookAuthorized(req) {
@@ -235,14 +236,12 @@ export async function startBot() {
   }
   const me = await instance.api.getMe();
   console.log(`bot @${me.username} is polling`);
-  polling = true;
-  instance.start();
+  if (!pollingSupervisor) pollingSupervisor = createPollingSupervisor(instance);
   return true;
 }
 
 export async function stopBot() {
-  // grammy's stop() waits on a promise that never settles when polling never
-  // started, which would hang the deploy's shutdown hook.
-  if (polling && bot?.botInfo) await bot.stop();
-  polling = false;
+  const supervisor = pollingSupervisor;
+  pollingSupervisor = null;
+  if (supervisor) await supervisor.stop();
 }
