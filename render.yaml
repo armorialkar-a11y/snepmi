@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: snepmi-miniapp
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: .
+    buildCommand: npm ci && npm run build
+    startCommand: node server/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      # Explicit, because the admin gate and the AUTH_DISABLED refusal key off it.
+      - key: NODE_ENV
+        value: production
+      # Render's load balancer sets X-Forwarded-For; trusting it gives the
+      # failed-auth limiter a real client address. Signature checks are identical
+      # either way, and the loopback dev bypass uses the socket, not this header.
+      - key: TRUST_PROXY
+        value: "true"
+      - key: BOT_TOKEN
+        sync: false
+      - key: MINI_APP_ORIGIN
+        sync: false
+      - key: ADMIN_USER_IDS
+        sync: false
+      - key: NOTIFY_CHAT_ID
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: snepmi-db
+          property: connectionString
+      - key: AUTO_MIGRATE
+        value: "true"
+      - key: AUTO_SEED
+        value: "true"
+      - key: NODE_VERSION
+        value: 22.11.0
+
+databases:
+  - name: snepmi-db
+    plan: free
+    databaseName: snepmi
+    user: snepmi

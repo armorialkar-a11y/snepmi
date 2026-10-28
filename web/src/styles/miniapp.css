@@ -1,0 +1,60 @@
+/* Mini App layer: only what Telegram's webview needs on top of site.css. */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  overscroll-behavior-y: none;
+}
+@supports (padding: env(safe-area-inset-top)) {
+  .header {
+    height: auto;
+    min-height: 86px;
+    padding-top: env(safe-area-inset-top);
+  }
+  .footer {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+  }
+  .lead-dialog {
+    max-height: calc(92dvh - env(safe-area-inset-bottom));
+  }
+}
+
+.envelope-flap {
+  transition: transform 700ms cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+.envelope-form-link {
+  display: block;
+  margin: 16px auto 0;
+  font-size: 13px;
+}
+
+/* Admin widgets reuse the site's form primitives; these are the few extras. */
+.admin-list button[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.admin-shell .btn,
+label.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  padding: 12px 16px;
+  min-height: 46px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.admin-shell .btn.danger {
+  color: #932a2a;
+  border-color: #932a2a;
+}
+.admin-form .field {
+  margin-top: 14px;
+}
+.admin-form .blogger-select {
+  margin-top: 22px;
+}
+.admin-pagination .btn:disabled {
+  opacity: 0.45;
+}

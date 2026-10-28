@@ -1,0 +1,6 @@
+# Telegram domain verification token.
+# BotFather shows a token when you link a Mini App domain (or ask for ownership
+# verification). Paste that token as the only line of this file, replacing the
+# text below, commit, redeploy, then press "Verify" in BotFather.
+# The app serves this file verbatim at https://<your-domain>/telegram-verification.txt
+PASTE_TELEGRAM_VERIFICATION_TOKEN_HERE
