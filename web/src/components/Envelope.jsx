@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { envelopeFrame } from '../lib/animation.js';
 import { CONTACTS, HERO_SCROLL } from '../lib/content.js';
-import { telegramHandle } from '../lib/blogger.js';
+import { adLink, telegramHandle } from '../lib/blogger.js';
 import { useStore } from '../lib/store.jsx';
 import { haptic, openLink } from '../lib/telegram.js';
 import { Plus } from './icons.jsx';
@@ -116,10 +116,7 @@ export default function Envelope() {
 
             <button
               className="btn dark full"
-              onClick={() => {
-                const link = `${primary}${primary.includes('?') ? '&' : '?'}text=${encodeURIComponent(SITE.adPrefill)}`;
-                openLink(link);
-              }}
+              onClick={() => openLink(adLink({}, config))}
             >
               {CONTACTS.letter.cta}
             </button>
