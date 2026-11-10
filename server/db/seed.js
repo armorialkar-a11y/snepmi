@@ -68,7 +68,7 @@ export async function seed({ log = console.log, force = false } = {}) {
     log(`seeded ${inserted}/${records.length} bloggers`);
   }
 
-  const seedTelegram = 'https://t.me/nesssvt';
+  const seedTelegram = 'https://t.me/advmiu';
   await pool.query(
     `UPDATE settings SET
        telegram = COALESCE(telegram, $1),

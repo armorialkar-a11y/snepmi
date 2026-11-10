@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { envelopeFrame } from '../lib/animation.js';
-import { CONTACTS, HERO_SCROLL, SITE } from '../lib/content.js';
+import { CONTACTS, HERO_SCROLL } from '../lib/content.js';
 import { telegramHandle } from '../lib/blogger.js';
 import { useStore } from '../lib/store.jsx';
 import { haptic, openLink } from '../lib/telegram.js';
@@ -51,9 +51,8 @@ export default function Envelope() {
   const frame = envelopeFrame(progress, size.paper, size.stage);
   const revealed = open && progress === 1;
 
-  const primary = config?.telegram || 'https://t.me/nesssvt';
+  const primary = config?.telegram || 'https://t.me/advmiu';
   const primaryHandle = telegramHandle(primary);
-  const secondary = SITE.secondaryContact;
   const [line1, line2, line3] = CONTACTS.letter.title;
 
   const toggle = () => {
@@ -112,19 +111,6 @@ export default function Envelope() {
                 }}
               >
                 {primaryHandle}
-              </a>
-            </div>
-
-            <div className="letter-contacts letter-additional-contact">
-              <span>{secondary.label}</span>
-              <a
-                href={secondary.url}
-                onClick={(event) => {
-                  event.preventDefault();
-                  openLink(secondary.url);
-                }}
-              >
-                {secondary.handle}
               </a>
             </div>
 

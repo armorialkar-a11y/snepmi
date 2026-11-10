@@ -7,5 +7,5 @@ export function selectionInquiry(bloggers) {
     '',
     'Подскажите, пожалуйста, условия сотрудничества.',
   ].join('\n');
-  return `https://t.me/nesssvt?text=${encodeURIComponent(text)}`;
+  return `https://t.me/advmiu?text=${encodeURIComponent(text)}`;
 }

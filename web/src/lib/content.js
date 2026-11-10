@@ -9,11 +9,6 @@ export const SITE = {
   brandSuffix: 'AGENCY',
   tagline: 'БРЕНДЫ. АВТОРЫ. ХИМИЯ.',
   adPrefill: 'Здравствуйте! Хочу обсудить рекламное сотрудничество с SNEPMI AGENCY',
-  secondaryContact: {
-    label: 'Дополнительный контакт · Telegram:',
-    handle: '@advmiu',
-    url: 'https://t.me/advmiu',
-  },
 };
 
 export const NAV = [

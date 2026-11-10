@@ -6,7 +6,7 @@ export function displayName(blogger) {
 }
 
 export function adLink(blogger, config) {
-  const base = blogger.ad_contact || config?.telegram || 'https://t.me/nesssvt';
+  const base = blogger.ad_contact || config?.telegram || 'https://t.me/advmiu';
   const separator = base.includes('?') ? '&' : '?';
   return `${base}${separator}text=${encodeURIComponent(SITE.adPrefill)}`;
 }
