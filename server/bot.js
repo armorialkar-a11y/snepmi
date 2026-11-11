@@ -59,14 +59,11 @@ export function createBot() {
 
   bot.command('start', async (ctx) => {
     const settings = await safeSettings();
-    const username = ctx.from.username ? `@${ctx.from.username}` : String(ctx.from.id);
     await ctx.reply(
       [
         'SNEPMI AGENCY — подбор блогеров под вашу рекламную задачу.',
         '',
         'Откройте SNEPMI AGENCY: познакомьтесь с агентством, перейдите в каталог и отметьте понравившихся авторов.',
-        '',
-        `Ваш id: ${username} (нужен, чтобы получить доступ к админ-панели).`,
       ].join('\n'),
       { reply_markup: startKeyboard(settings) }
     );
