@@ -10,9 +10,9 @@ test('life aliases merge with no duplicates; unrelated topics retain order', () 
 test('prices are omitted, including future entries from existing database', () => {
   assert.deepEqual(withoutPrices(['Цена по запросу', 'От 2 000 руб.', 'Стоимость договорная', '500 USD', 'Без казино.', 'От 70 тыс. просмотров.']), ['Без казино.', 'От 70 тыс. просмотров.']);
 });
-test('all 38 bloggers retain identity, links, photos, order and restrictions', () => {
+test('all bloggers retain identity, links, photos, order and restrictions', () => {
   const updated = original.map(publicBlogger);
-  assert.equal(updated.length, 38);
+  assert.equal(updated.length, original.length);
   for (let i = 0; i < updated.length; i++) {
     for (const key of Object.keys(original[i]).filter(k => !['topics','ad_terms','ad_restrictions','price'].includes(k))) {
       assert.deepEqual(updated[i][key], original[i][key], key);

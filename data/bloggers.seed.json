@@ -1543,5 +1543,47 @@
     "ad_contact": "https://t.me/advmiu",
     "ad_terms": [],
     "ad_restrictions": []
+  },
+  {
+    "id": "eb14420a-b50e-45f2-b0bb-e812a0977ff2",
+    "name": "Ирина Тихомирова",
+    "nickname": null,
+    "image_url": "/images/bloggers/eb14420a.webp",
+    "social_url": "https://t.me/tihomirno_obo_vsem",
+    "platform": "Telegram",
+    "social_links": [
+      {
+        "platform": "Telegram",
+        "url": "https://t.me/tihomirno_obo_vsem"
+      },
+      {
+        "platform": "Instagram",
+        "url": "https://www.instagram.com/irina.tiho.mirova"
+      }
+    ],
+    "followers": null,
+    "average_views": null,
+    "topics": [
+      "семейный лайфстайл",
+      "материнство",
+      "дети",
+      "семья",
+      "повседневная жизнь",
+      "личный блог"
+    ],
+    "formats": [],
+    "price": null,
+    "description": null,
+    "audience": "Женщины 25–40 (предположительно)",
+    "geography": "Уточняется",
+    "image_kind": "photo",
+    "published": true,
+    "sort_order": 1000,
+    "category": "unassigned",
+    "featured_first": false,
+    "rkn_registered": null,
+    "ad_contact": "https://t.me/advmiu",
+    "ad_terms": [],
+    "ad_restrictions": []
   }
 ]
