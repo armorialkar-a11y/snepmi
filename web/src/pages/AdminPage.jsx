@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ADMIN_TEXT, CATALOG_PAGE, CATEGORY_META } from '../lib/content.js';
 import { ApiError, api, partitionFieldErrors } from '../lib/api.js';
 import { navigate } from '../lib/router.js';
+import { useStore } from '../lib/store.jsx';
 import { displayName } from '../lib/blogger.js';
 import { SafeImage } from '../components/BloggerCard.jsx';
 import { confirmAction, haptic, initDataRaw, isMiniApp, onBackClick } from '../lib/telegram.js';
@@ -845,6 +846,7 @@ function ErrorText({ error }) {
 const SETTINGS_FIELDS = new Set(['telegram', 'email', 'privacyUrl', 'operator', 'leadsReady', 'adminUserIds']);
 
 function SettingsTab() {
+  const { applySettings } = useStore();
   const [settings, setSettings] = useState(null);
   const [draft, setDraft] = useState(null);
   const [note, setNote] = useState('');
@@ -885,7 +887,8 @@ function SettingsTab() {
           .map((value) => value.trim())
           .filter(Boolean),
       };
-      await api.put('/admin/settings', payload);
+      const saved = await api.put('/admin/settings', payload);
+      applySettings(saved.settings);
       haptic('success');
       setNote('Настройки сохранены.');
       const fresh = await api.get('/admin/settings');

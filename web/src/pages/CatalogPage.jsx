@@ -39,7 +39,7 @@ export default function CatalogPage() {
 
   const selected = picked.map((id) => bloggers.find((blogger) => blogger.id === id)).filter(Boolean);
   const filtered = Boolean(query.trim() || platform || topic);
-  const inquiry = selectionInquiry(selected);
+  const inquiry = selectionInquiry(selected, config?.telegram);
   const discussSelected = (event) => {
     event.preventDefault();
     haptic('light');

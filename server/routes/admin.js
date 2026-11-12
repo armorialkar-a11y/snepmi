@@ -13,6 +13,7 @@ import {
 } from '../lib/schemas.js';
 import { adminAudit, requireAdmin } from '../lib/telegramAuth.js';
 import { mapBlogger } from './public.js';
+import { csvCell } from '../lib/csv.js';
 
 export const adminRouter = Router();
 
@@ -252,11 +253,7 @@ adminRouter.get('/leads.csv', async (req, res, next) => {
       ['task', 'Задача'], ['blogger_names', 'Блогеры'], ['budget', 'Бюджет'],
       ['launch_date', 'Запуск'], ['tg_username', 'Telegram автора'], ['note', 'Заметка'],
     ];
-    const escape = (value) => {
-      if (value === null || value === undefined) return '';
-      const text = Array.isArray(value) ? value.join('; ') : String(value);
-      return `"${text.replace(/"/g, '""')}"`;
-    };
+    const escape = csvCell;
     const lines = [columns.map(([, label]) => escape(label)).join(';')];
     for (const row of rows) {
       lines.push(columns.map(([key]) => escape(row[key] instanceof Date ? row[key].toISOString() : row[key])).join(';'));

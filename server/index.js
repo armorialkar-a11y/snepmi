@@ -8,6 +8,7 @@ import { seed } from './db/seed.js';
 import { publicRouter, sendMedia } from './routes/public.js';
 import { adminRouter } from './routes/admin.js';
 import { startBot, stopBot, webhookHandler } from './bot.js';
+import { startNotificationWorker } from './lib/notificationOutbox.js';
 
 const app = express();
 
@@ -23,7 +24,7 @@ const CSP =
     "script-src 'self' https://telegram.org",
     // React sets a handful of transform/opacity styles inline; nothing else.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://telegram.org",
+    "img-src 'self' data: https:",
     "font-src 'self' data:",
     "connect-src 'self'",
     "object-src 'none'",
@@ -152,9 +153,14 @@ async function boot() {
   });
 
   startBot().catch((error) => console.error('bot start failed:', error.message));
+  const notificationWorker = config.databaseUrl ? startNotificationWorker() : null;
+  if (config.databaseUrl && (!config.botToken || !config.notifyChatId)) {
+    console.warn('BOT_TOKEN or NOTIFY_CHAT_ID is missing — lead notifications remain queued until configured.');
+  }
 
   const shutdown = async () => {
     console.log('shutting down');
+    await notificationWorker?.stop().catch(() => {});
     await stopBot().catch(() => {});
     server.close();
     if (config.databaseUrl) await getPool().end().catch(() => {});

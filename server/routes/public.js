@@ -3,7 +3,8 @@ import { query } from '../db/pool.js';
 import { getSettings } from '../lib/settings.js';
 import { fieldErrors, leadSchema } from '../lib/schemas.js';
 import { requireTelegram } from '../lib/telegramAuth.js';
-import { notifyNewLead } from '../bot.js';
+import { publicBlogger } from '../../shared/public-blogger.js';
+import { INSERT_LEAD_SQL } from '../db/leadSql.js';
 
 export const publicRouter = Router();
 
@@ -42,8 +43,11 @@ publicRouter.get('/config', async (_req, res, next) => {
 
 publicRouter.get('/bloggers', async (_req, res, next) => {
   try {
-    const { rows } = await query('SELECT * FROM bloggers WHERE published = true');
-    res.json({ bloggers: rows.map(mapBlogger), error: false });
+    const { rows } = await query(`SELECT id, name, nickname, image_url, social_url, platform, social_links,
+      topics, formats, audience, geography, image_kind, sort_order, category,
+      featured_first, rkn_registered, ad_contact, ad_restrictions
+      FROM bloggers WHERE published = true`);
+    res.json({ bloggers: rows.map(mapPublicBlogger), error: false });
   } catch (error) {
     next(error);
   }
@@ -83,10 +87,7 @@ publicRouter.post('/leads', requireTelegram(), async (req, res, next) => {
     }
 
     const { rows } = await query(
-      `INSERT INTO leads (name, company, contact, social_url, task, blogger_ids, blogger_names,
-                          budget, launch_date, consent, source, tg_user_id, tg_username)
-       VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7::jsonb,$8,$9,$10,$11,$12,$13)
-       RETURNING id, created_at`,
+      INSERT_LEAD_SQL,
       [
         parsed.data.name,
         parsed.data.company,
@@ -103,9 +104,6 @@ publicRouter.post('/leads', requireTelegram(), async (req, res, next) => {
         req.tgUser.username || null,
       ]
     );
-
-    const lead = { ...parsed.data, id: rows[0].id, names };
-    notifyNewLead(lead).catch((error) => console.error('lead notification failed:', error.message));
 
     res.status(201).json({ ok: true, id: rows[0].id });
   } catch (error) {
@@ -158,4 +156,13 @@ export function mapBlogger(row) {
   out.price = row.price === null ? null : Number(row.price);
   out.id = String(row.id);
   return out;
+}
+
+/** Explicit allowlist: unpublished/internal and advertising fields never reach the public API. */
+export function mapPublicBlogger(row) {
+  const clean = publicBlogger(mapBlogger(row));
+  const keys = ['id', 'name', 'nickname', 'image_url', 'social_url', 'platform', 'social_links',
+    'topics', 'formats', 'audience', 'geography',
+    'image_kind', 'sort_order', 'category', 'featured_first', 'rkn_registered', 'ad_contact', 'ad_restrictions'];
+  return Object.fromEntries(keys.map((key) => [key, clean[key]]));
 }

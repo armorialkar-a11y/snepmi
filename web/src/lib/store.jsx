@@ -42,6 +42,13 @@ export function StoreProvider({ children }) {
     reload();
   }, [reload]);
 
+  const applySettings = useCallback((settings) => {
+    setConfig((previous) => ({
+      ...previous, telegram: settings.telegram, email: settings.email, leadsReady: settings.leadsReady,
+      privacyUrl: settings.privacyUrl, operator: settings.operator,
+    }));
+  }, []);
+
   const setPicked = useCallback((next) => {
     setPickedState((previous) => {
       const value = typeof next === 'function' ? next(previous) : next;
@@ -84,6 +91,7 @@ export function StoreProvider({ children }) {
       status,
       error,
       reload,
+      applySettings,
       picked,
       setPicked,
       togglePicked,
@@ -92,7 +100,7 @@ export function StoreProvider({ children }) {
       openLead,
       closeLead,
     }),
-    [config, bloggers, status, error, reload, picked, setPicked, togglePicked, clearPicked, lead, openLead, closeLead]
+    [config, bloggers, status, error, reload, applySettings, picked, setPicked, togglePicked, clearPicked, lead, openLead, closeLead]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
