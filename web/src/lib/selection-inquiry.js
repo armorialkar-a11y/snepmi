@@ -15,5 +15,8 @@ export function selectionInquiry(bloggers, contact) {
     url = new URL('https://t.me/advmiu');
   }
   url.searchParams.set('text', text);
+  // Telegram may preserve form-encoded "+" literally instead of decoding it
+  // as a space. Encode spaces as %20; literal plus signs are already %2B.
+  url.search = url.search.replace(/\+/g, '%20');
   return url.toString();
 }

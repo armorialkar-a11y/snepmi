@@ -14,3 +14,12 @@ test('names with special characters are safely encoded',()=>{
  assert(url.searchParams.get('text').includes('— Рокси & Юля #1'));
  assert.equal(url.hash,'');
 });
+test('encodes spaces as %20 for Telegram while preserving literal plus signs',()=>{
+ const href=selectionInquiry([{name:'A+B'}], 'https://t.me/example?source=hello+there');
+ const url=new URL(href);
+ assert(!url.search.includes('+'));
+ assert(url.search.includes('%20'));
+ assert(url.search.includes('A%2BB'));
+ assert.equal(url.searchParams.get('source'), 'hello there');
+ assert(url.searchParams.get('text').includes('— A+B'));
+});
